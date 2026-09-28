@@ -55,6 +55,16 @@ button{font:inherit;color:inherit;border:none;background:none;cursor:pointer;pad
 .card .ru{font-size:40px;font-weight:800;margin-top:10px;word-break:break-word;font-family:system-ui,-apple-system,sans-serif}
 .card .kana{font-size:20px;color:var(--main);margin-top:4px;font-weight:700}
 .card .ja{font-size:18px;color:var(--sub);margin-top:6px}
+/* 発音記号（IPA）。IPAの文字が そろっている フォントを さきに */
+.ipa{font-family:"Charis SIL","Doulos SIL","Gentium Plus","Lucida Grande",-apple-system,"Segoe UI","Noto Sans",sans-serif;color:var(--purple);letter-spacing:.02em}
+.card .ipa{font-size:18px;margin-top:2px}
+.no-ipa .ipa{display:none}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;background:var(--card);border-radius:18px;box-shadow:var(--shadow);padding:14px 16px;margin-top:16px;font-size:16px;text-align:left}
+.toggle small{display:block;color:var(--sub);font-size:13px}
+.sw{flex:none;width:52px;height:30px;border-radius:15px;background:#d9ccc0;position:relative;transition:background .2s}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .2s}
+.sw.on{background:var(--green)}
+.sw.on::after{transform:translateX(22px)}
 .bigletter{font-size:120px;font-weight:800;line-height:1;font-family:system-ui,-apple-system,sans-serif}
 .bigletter span{font-size:72px;color:var(--sub);margin-left:10px}
 .info{display:flex;justify-content:center;gap:10px;margin-top:10px;flex-wrap:wrap}
@@ -109,121 +119,121 @@ button{font:inherit;color:inherit;border:none;background:none;cursor:pointer;pad
 // ===== データ =====
 // type: vowel=ぼいん / cons=しいん / sign=きごう。 hi=例の単語のなかで その文字の位置
 const LETTERS = [
-  {u:'А',l:'а',t:'vowel',name:'а',kana:'アー',snd:'ア',w:'арбуз',wk:'アルブース',e:'🍉',ja:'すいか'},
-  {u:'Б',l:'б',t:'cons',name:'бэ',kana:'ベー',snd:'ブ',w:'банан',wk:'バナーン',e:'🍌',ja:'バナナ'},
-  {u:'В',l:'в',t:'cons',name:'вэ',kana:'ヴェー',snd:'ヴ',w:'волк',wk:'ヴォールク',e:'🐺',ja:'おおかみ'},
-  {u:'Г',l:'г',t:'cons',name:'гэ',kana:'ゲー',snd:'グ',w:'гриб',wk:'グリープ',e:'🍄',ja:'きのこ'},
-  {u:'Д',l:'д',t:'cons',name:'дэ',kana:'デー',snd:'ドゥ',w:'дом',wk:'ドーム',e:'🏠',ja:'いえ'},
-  {u:'Е',l:'е',t:'vowel',name:'е',kana:'イェー',snd:'イェ',w:'ель',wk:'イェーリ',e:'🌲',ja:'もみのき'},
-  {u:'Ё',l:'ё',t:'vowel',name:'ё',kana:'ヨー',snd:'ヨ',w:'ёжик',wk:'ヨージク',e:'🦔',ja:'はりねずみ'},
-  {u:'Ж',l:'ж',t:'cons',name:'жэ',kana:'ジェー',snd:'ジュ',w:'жираф',wk:'ジラーフ',e:'🦒',ja:'きりん'},
-  {u:'З',l:'з',t:'cons',name:'зэ',kana:'ゼー',snd:'ズ',w:'зонт',wk:'ゾーント',e:'☂️',ja:'かさ'},
-  {u:'И',l:'и',t:'vowel',name:'и',kana:'イー',snd:'イ',w:'игрушка',wk:'イグルーシカ',e:'🧸',ja:'おもちゃ'},
-  {u:'Й',l:'й',t:'cons',tk:'みじかいイ',name:'и краткое',kana:'イー・クラートカエ',snd:'みじかい イ',w:'йогурт',wk:'ヨーグルト',e:'🥛',ja:'ヨーグルト'},
-  {u:'К',l:'к',t:'cons',name:'ка',kana:'カー',snd:'ク',w:'кот',wk:'コート',e:'🐱',ja:'ねこ'},
-  {u:'Л',l:'л',t:'cons',name:'эль',kana:'エリ',snd:'ル',w:'лиса',wk:'リサー',e:'🦊',ja:'きつね'},
-  {u:'М',l:'м',t:'cons',name:'эм',kana:'エム',snd:'ム',w:'мяч',wk:'ミャーチ',e:'⚽',ja:'ボール'},
-  {u:'Н',l:'н',t:'cons',name:'эн',kana:'エヌ',snd:'ヌ',w:'нос',wk:'ノース',e:'👃',ja:'はな'},
-  {u:'О',l:'о',t:'vowel',name:'о',kana:'オー',snd:'オ',w:'облако',wk:'オーブラカ',e:'☁️',ja:'くも'},
-  {u:'П',l:'п',t:'cons',name:'пэ',kana:'ペー',snd:'プ',w:'пингвин',wk:'ピングヴィーン',e:'🐧',ja:'ペンギン'},
-  {u:'Р',l:'р',t:'cons',name:'эр',kana:'エル',snd:'ル（まきじた）',w:'рыба',wk:'ルィーバ',e:'🐟',ja:'さかな'},
-  {u:'С',l:'с',t:'cons',name:'эс',kana:'エス',snd:'ス',w:'солнце',wk:'ソーンツェ',e:'☀️',ja:'たいよう'},
-  {u:'Т',l:'т',t:'cons',name:'тэ',kana:'テー',snd:'トゥ',w:'тигр',wk:'ティーグル',e:'🐯',ja:'とら'},
-  {u:'У',l:'у',t:'vowel',name:'у',kana:'ウー',snd:'ウ',w:'утка',wk:'ウートカ',e:'🦆',ja:'あひる'},
-  {u:'Ф',l:'ф',t:'cons',name:'эф',kana:'エフ',snd:'フ',w:'флаг',wk:'フラーク',e:'🚩',ja:'はた'},
-  {u:'Х',l:'х',t:'cons',name:'ха',kana:'ハー',snd:'フ（のどのおく）',w:'хлеб',wk:'フリェープ',e:'🍞',ja:'パン'},
-  {u:'Ц',l:'ц',t:'cons',name:'цэ',kana:'ツェー',snd:'ツ',w:'цветок',wk:'ツヴィトーク',e:'🌸',ja:'はな（おはな）'},
-  {u:'Ч',l:'ч',t:'cons',name:'че',kana:'チェー',snd:'チ',w:'часы',wk:'チスィー',e:'⌚',ja:'とけい'},
-  {u:'Ш',l:'ш',t:'cons',name:'ша',kana:'シャー',snd:'シュ',w:'шапка',wk:'シャープカ',e:'🧢',ja:'ぼうし'},
-  {u:'Щ',l:'щ',t:'cons',name:'ща',kana:'シシャー',snd:'シッ（ながい）',w:'щенок',wk:'シシノーク',e:'🐶',ja:'こいぬ'},
-  {u:'Ъ',l:'ъ',t:'sign',tk:'かたいしるし',name:'твёрдый знак',kana:'トヴョールドゥイ・ズナーク',snd:'おとは ない',note:'「かたい しるし」。まえと うしろの おとを きりはなす しるしだよ。ことばの はじめには こないよ。',w:'подъезд',wk:'パドイェーストゥ',e:'🚪',ja:'（たてものの）いりぐち'},
-  {u:'Ы',l:'ы',t:'vowel',name:'ы',kana:'ウィ',snd:'ウィ（イと ウの あいだ）',note:'ことばの はじめには ほとんど こないよ。',w:'сыр',wk:'スィール',e:'🧀',ja:'チーズ'},
-  {u:'Ь',l:'ь',t:'sign',tk:'やわらかいしるし',name:'мягкий знак',kana:'ミャーフキー・ズナーク',snd:'おとは ない',note:'「やわらかい しるし」。まえの おとを やさしく する しるしだよ。ことばの はじめには こないよ。',w:'конь',wk:'コーニ',e:'🐴',ja:'うま'},
-  {u:'Э',l:'э',t:'vowel',name:'э',kana:'エー',snd:'エ',w:'экран',wk:'エクラーン',e:'📺',ja:'がめん'},
-  {u:'Ю',l:'ю',t:'vowel',name:'ю',kana:'ユー',snd:'ユ',w:'юбка',wk:'ユープカ',e:'👗',ja:'スカート'},
-  {u:'Я',l:'я',t:'vowel',name:'я',kana:'ヤー',snd:'ヤ',w:'яблоко',wk:'ヤーブラカ',e:'🍎',ja:'りんご'},
+  {u:'А',l:'а',t:'vowel',name:'а',kana:'アー',snd:'ア',ipa:'a',w:'арбуз',wi:'ɐrˈbus',wk:'アルブース',e:'🍉',ja:'すいか'},
+  {u:'Б',l:'б',t:'cons',name:'бэ',kana:'ベー',snd:'ブ',ipa:'b',w:'банан',wi:'bɐˈnan',wk:'バナーン',e:'🍌',ja:'バナナ'},
+  {u:'В',l:'в',t:'cons',name:'вэ',kana:'ヴェー',snd:'ヴ',ipa:'v',w:'волк',wi:'voɫk',wk:'ヴォールク',e:'🐺',ja:'おおかみ'},
+  {u:'Г',l:'г',t:'cons',name:'гэ',kana:'ゲー',snd:'グ',ipa:'ɡ',w:'гриб',wi:'ɡrʲip',wk:'グリープ',e:'🍄',ja:'きのこ'},
+  {u:'Д',l:'д',t:'cons',name:'дэ',kana:'デー',snd:'ドゥ',ipa:'d',w:'дом',wi:'dom',wk:'ドーム',e:'🏠',ja:'いえ'},
+  {u:'Е',l:'е',t:'vowel',name:'е',kana:'イェー',snd:'イェ',ipa:'je',w:'ель',wi:'jelʲ',wk:'イェーリ',e:'🌲',ja:'もみのき'},
+  {u:'Ё',l:'ё',t:'vowel',name:'ё',kana:'ヨー',snd:'ヨ',ipa:'jo',w:'ёжик',wi:'ˈjoʐɨk',wk:'ヨージク',e:'🦔',ja:'はりねずみ'},
+  {u:'Ж',l:'ж',t:'cons',name:'жэ',kana:'ジェー',snd:'ジュ',ipa:'ʐ',w:'жираф',wi:'ʐɨˈraf',wk:'ジラーフ',e:'🦒',ja:'きりん'},
+  {u:'З',l:'з',t:'cons',name:'зэ',kana:'ゼー',snd:'ズ',ipa:'z',w:'зонт',wi:'zont',wk:'ゾーント',e:'☂️',ja:'かさ'},
+  {u:'И',l:'и',t:'vowel',name:'и',kana:'イー',snd:'イ',ipa:'i',w:'игрушка',wi:'ɪˈɡruʂkə',wk:'イグルーシカ',e:'🧸',ja:'おもちゃ'},
+  {u:'Й',l:'й',t:'cons',tk:'みじかいイ',name:'и краткое',kana:'イー・クラートカエ',snd:'みじかい イ',ipa:'j',w:'йогурт',wi:'ˈjoɡʊrt',wk:'ヨーグルト',e:'🥛',ja:'ヨーグルト'},
+  {u:'К',l:'к',t:'cons',name:'ка',kana:'カー',snd:'ク',ipa:'k',w:'кот',wi:'kot',wk:'コート',e:'🐱',ja:'ねこ'},
+  {u:'Л',l:'л',t:'cons',name:'эль',kana:'エリ',snd:'ル',ipa:'ɫ',w:'лиса',wi:'lʲɪˈsa',wk:'リサー',e:'🦊',ja:'きつね'},
+  {u:'М',l:'м',t:'cons',name:'эм',kana:'エム',snd:'ム',ipa:'m',w:'мяч',wi:'mʲæt͡ɕ',wk:'ミャーチ',e:'⚽',ja:'ボール'},
+  {u:'Н',l:'н',t:'cons',name:'эн',kana:'エヌ',snd:'ヌ',ipa:'n',w:'нос',wi:'nos',wk:'ノース',e:'👃',ja:'はな'},
+  {u:'О',l:'о',t:'vowel',name:'о',kana:'オー',snd:'オ',ipa:'o',w:'облако',wi:'ˈobɫəkə',wk:'オーブラカ',e:'☁️',ja:'くも'},
+  {u:'П',l:'п',t:'cons',name:'пэ',kana:'ペー',snd:'プ',ipa:'p',w:'пингвин',wi:'pʲɪnˈɡvʲin',wk:'ピングヴィーン',e:'🐧',ja:'ペンギン'},
+  {u:'Р',l:'р',t:'cons',name:'эр',kana:'エル',snd:'ル（まきじた）',ipa:'r',w:'рыба',wi:'ˈrɨbə',wk:'ルィーバ',e:'🐟',ja:'さかな'},
+  {u:'С',l:'с',t:'cons',name:'эс',kana:'エス',snd:'ス',ipa:'s',w:'солнце',wi:'ˈsont͡sə',wk:'ソーンツェ',e:'☀️',ja:'たいよう'},
+  {u:'Т',l:'т',t:'cons',name:'тэ',kana:'テー',snd:'トゥ',ipa:'t',w:'тигр',wi:'tʲiɡr',wk:'ティーグル',e:'🐯',ja:'とら'},
+  {u:'У',l:'у',t:'vowel',name:'у',kana:'ウー',snd:'ウ',ipa:'u',w:'утка',wi:'ˈutkə',wk:'ウートカ',e:'🦆',ja:'あひる'},
+  {u:'Ф',l:'ф',t:'cons',name:'эф',kana:'エフ',snd:'フ',ipa:'f',w:'флаг',wi:'fɫak',wk:'フラーク',e:'🚩',ja:'はた'},
+  {u:'Х',l:'х',t:'cons',name:'ха',kana:'ハー',snd:'フ（のどのおく）',ipa:'x',w:'хлеб',wi:'xlʲep',wk:'フリェープ',e:'🍞',ja:'パン'},
+  {u:'Ц',l:'ц',t:'cons',name:'цэ',kana:'ツェー',snd:'ツ',ipa:'t͡s',w:'цветок',wi:'t͡svʲɪˈtok',wk:'ツヴィトーク',e:'🌸',ja:'はな（おはな）'},
+  {u:'Ч',l:'ч',t:'cons',name:'че',kana:'チェー',snd:'チ',ipa:'t͡ɕ',w:'часы',wi:'t͡ɕɪˈsɨ',wk:'チスィー',e:'⌚',ja:'とけい'},
+  {u:'Ш',l:'ш',t:'cons',name:'ша',kana:'シャー',snd:'シュ',ipa:'ʂ',w:'шапка',wi:'ˈʂapkə',wk:'シャープカ',e:'🧢',ja:'ぼうし'},
+  {u:'Щ',l:'щ',t:'cons',name:'ща',kana:'シシャー',snd:'シッ（ながい）',ipa:'ɕː',w:'щенок',wi:'ɕːɪˈnok',wk:'シシノーク',e:'🐶',ja:'こいぬ'},
+  {u:'Ъ',l:'ъ',t:'sign',tk:'かたいしるし',name:'твёрдый знак',kana:'トヴョールドゥイ・ズナーク',snd:'おとは ない',note:'「かたい しるし」。まえと うしろの おとを きりはなす しるしだよ。ことばの はじめには こないよ。',ipa:'',w:'подъезд',wi:'pɐˈdjest',wk:'パドイェーストゥ',e:'🚪',ja:'（たてものの）いりぐち'},
+  {u:'Ы',l:'ы',t:'vowel',name:'ы',kana:'ウィ',snd:'ウィ（イと ウの あいだ）',note:'ことばの はじめには ほとんど こないよ。',ipa:'ɨ',w:'сыр',wi:'sɨr',wk:'スィール',e:'🧀',ja:'チーズ'},
+  {u:'Ь',l:'ь',t:'sign',tk:'やわらかいしるし',name:'мягкий знак',kana:'ミャーフキー・ズナーク',snd:'おとは ない',note:'「やわらかい しるし」。まえの おとを やさしく する しるしだよ。ことばの はじめには こないよ。',ipa:'ʲ',w:'конь',wi:'konʲ',wk:'コーニ',e:'🐴',ja:'うま'},
+  {u:'Э',l:'э',t:'vowel',name:'э',kana:'エー',snd:'エ',ipa:'ɛ',w:'экран',wi:'ɛˈkran',wk:'エクラーン',e:'📺',ja:'がめん'},
+  {u:'Ю',l:'ю',t:'vowel',name:'ю',kana:'ユー',snd:'ユ',ipa:'ju',w:'юбка',wi:'ˈjupkə',wk:'ユープカ',e:'👗',ja:'スカート'},
+  {u:'Я',l:'я',t:'vowel',name:'я',kana:'ヤー',snd:'ヤ',ipa:'ja',w:'яблоко',wi:'ˈjabɫəkə',wk:'ヤーブラカ',e:'🍎',ja:'りんご'},
 ];
 
 const CATS = [
   {id:'hello',title:'あいさつ',icon:'👋',color:'#ff7a59',words:[
-    {ru:'Привет!',kana:'プリヴェート',ja:'やあ！こんにちは',e:'👋'},
-    {ru:'Пока!',kana:'パカー',ja:'バイバイ',e:'🙋'},
-    {ru:'Спасибо',kana:'スパシーバ',ja:'ありがとう',e:'🙏'},
-    {ru:'Пожалуйста',kana:'パジャールスタ',ja:'どういたしまして／どうぞ',e:'😊'},
-    {ru:'Да',kana:'ダー',ja:'はい',e:'⭕'},
-    {ru:'Нет',kana:'ニェート',ja:'いいえ',e:'❌'},
-    {ru:'Доброе утро!',kana:'ドーブラエ ウートラ',ja:'おはよう',e:'🌅'},
-    {ru:'Спокойной ночи!',kana:'スパコーイナイ ノーチ',ja:'おやすみ',e:'🌙'},
+    {ru:'Привет!',ipa:'prʲɪˈvʲet',kana:'プリヴェート',ja:'やあ！こんにちは',e:'👋'},
+    {ru:'Пока!',ipa:'pɐˈka',kana:'パカー',ja:'バイバイ',e:'🙋'},
+    {ru:'Спасибо',ipa:'spɐˈsʲibə',kana:'スパシーバ',ja:'ありがとう',e:'🙏'},
+    {ru:'Пожалуйста',ipa:'pɐˈʐaɫstə',kana:'パジャールスタ',ja:'どういたしまして／どうぞ',e:'😊'},
+    {ru:'Да',ipa:'da',kana:'ダー',ja:'はい',e:'⭕'},
+    {ru:'Нет',ipa:'nʲet',kana:'ニェート',ja:'いいえ',e:'❌'},
+    {ru:'Доброе утро!',ipa:'ˈdobrəjə ˈutrə',kana:'ドーブラエ ウートラ',ja:'おはよう',e:'🌅'},
+    {ru:'Спокойной ночи!',ipa:'spɐˈkojnəj ˈnot͡ɕɪ',kana:'スパコーイナイ ノーチ',ja:'おやすみ',e:'🌙'},
   ]},
   {id:'animals',title:'どうぶつ',icon:'🐻',color:'#35b36b',words:[
-    {ru:'кошка',kana:'コーシカ',ja:'ねこ',e:'🐱'},
-    {ru:'собака',kana:'サバーカ',ja:'いぬ',e:'🐶'},
-    {ru:'медведь',kana:'ミドヴェーチ',ja:'くま',e:'🐻'},
-    {ru:'заяц',kana:'ザーイツ',ja:'うさぎ',e:'🐰'},
-    {ru:'лиса',kana:'リサー',ja:'きつね',e:'🦊'},
-    {ru:'мышь',kana:'ムィシ',ja:'ねずみ',e:'🐭'},
-    {ru:'птица',kana:'プティーツァ',ja:'とり',e:'🐦'},
-    {ru:'рыба',kana:'ルィーバ',ja:'さかな',e:'🐟'},
-    {ru:'слон',kana:'スローン',ja:'ぞう',e:'🐘'},
-    {ru:'лошадь',kana:'ローシャチ',ja:'うま',e:'🐴'},
-    {ru:'корова',kana:'カローヴァ',ja:'うし',e:'🐮'},
-    {ru:'лягушка',kana:'リグーシカ',ja:'かえる',e:'🐸'},
+    {ru:'кошка',ipa:'ˈkoʂkə',kana:'コーシカ',ja:'ねこ',e:'🐱'},
+    {ru:'собака',ipa:'sɐˈbakə',kana:'サバーカ',ja:'いぬ',e:'🐶'},
+    {ru:'медведь',ipa:'mʲɪdˈvʲetʲ',kana:'ミドヴェーチ',ja:'くま',e:'🐻'},
+    {ru:'заяц',ipa:'ˈzajɪt͡s',kana:'ザーイツ',ja:'うさぎ',e:'🐰'},
+    {ru:'лиса',ipa:'lʲɪˈsa',kana:'リサー',ja:'きつね',e:'🦊'},
+    {ru:'мышь',ipa:'mɨʂ',kana:'ムィシ',ja:'ねずみ',e:'🐭'},
+    {ru:'птица',ipa:'ˈptʲit͡sə',kana:'プティーツァ',ja:'とり',e:'🐦'},
+    {ru:'рыба',ipa:'ˈrɨbə',kana:'ルィーバ',ja:'さかな',e:'🐟'},
+    {ru:'слон',ipa:'sɫon',kana:'スローン',ja:'ぞう',e:'🐘'},
+    {ru:'лошадь',ipa:'ˈɫoʂətʲ',kana:'ローシャチ',ja:'うま',e:'🐴'},
+    {ru:'корова',ipa:'kɐˈrovə',kana:'カローヴァ',ja:'うし',e:'🐮'},
+    {ru:'лягушка',ipa:'lʲɪˈɡuʂkə',kana:'リグーシカ',ja:'かえる',e:'🐸'},
   ]},
   {id:'colors',title:'いろ',icon:'🎨',color:'#9b6bff',words:[
-    {ru:'красный',kana:'クラースヌイ',ja:'あか',e:'🔴'},
-    {ru:'синий',kana:'シーニー',ja:'あお',e:'🔵'},
-    {ru:'зелёный',kana:'ジリョーヌイ',ja:'みどり',e:'🟢'},
-    {ru:'жёлтый',kana:'ジョールトゥイ',ja:'きいろ',e:'🟡'},
-    {ru:'оранжевый',kana:'アランジェヴイ',ja:'オレンジ',e:'🟠'},
-    {ru:'фиолетовый',kana:'フィアリェータヴイ',ja:'むらさき',e:'🟣'},
-    {ru:'белый',kana:'ビェールイ',ja:'しろ',e:'⚪️'},
-    {ru:'чёрный',kana:'チョールヌイ',ja:'くろ',e:'⚫️'},
-    {ru:'коричневый',kana:'カリーチニヴイ',ja:'ちゃいろ',e:'🟤'},
+    {ru:'красный',ipa:'ˈkrasnɨj',kana:'クラースヌイ',ja:'あか',e:'🔴'},
+    {ru:'синий',ipa:'ˈsʲinʲɪj',kana:'シーニー',ja:'あお',e:'🔵'},
+    {ru:'зелёный',ipa:'zʲɪˈlʲonɨj',kana:'ジリョーヌイ',ja:'みどり',e:'🟢'},
+    {ru:'жёлтый',ipa:'ˈʐoɫtɨj',kana:'ジョールトゥイ',ja:'きいろ',e:'🟡'},
+    {ru:'оранжевый',ipa:'ɐˈranʐɨvɨj',kana:'アランジェヴイ',ja:'オレンジ',e:'🟠'},
+    {ru:'фиолетовый',ipa:'fʲɪɐˈlʲetəvɨj',kana:'フィアリェータヴイ',ja:'むらさき',e:'🟣'},
+    {ru:'белый',ipa:'ˈbʲeɫɨj',kana:'ビェールイ',ja:'しろ',e:'⚪️'},
+    {ru:'чёрный',ipa:'ˈt͡ɕornɨj',kana:'チョールヌイ',ja:'くろ',e:'⚫️'},
+    {ru:'коричневый',ipa:'kɐˈrʲit͡ɕnʲɪvɨj',kana:'カリーチニヴイ',ja:'ちゃいろ',e:'🟤'},
   ]},
   {id:'numbers',title:'かず',icon:'🔢',color:'#4d8cff',words:[
-    {ru:'один',kana:'アジーン',ja:'1（いち）',e:'1️⃣'},
-    {ru:'два',kana:'ドゥヴァー',ja:'2（に）',e:'2️⃣'},
-    {ru:'три',kana:'トリー',ja:'3（さん）',e:'3️⃣'},
-    {ru:'четыре',kana:'チトゥィリェ',ja:'4（よん）',e:'4️⃣'},
-    {ru:'пять',kana:'ピャーチ',ja:'5（ご）',e:'5️⃣'},
-    {ru:'шесть',kana:'シェースチ',ja:'6（ろく）',e:'6️⃣'},
-    {ru:'семь',kana:'シェーミ',ja:'7（なな）',e:'7️⃣'},
-    {ru:'восемь',kana:'ヴォーシミ',ja:'8（はち）',e:'8️⃣'},
-    {ru:'девять',kana:'ジェーヴィチ',ja:'9（きゅう）',e:'9️⃣'},
-    {ru:'десять',kana:'ジェーシチ',ja:'10（じゅう）',e:'🔟'},
+    {ru:'один',ipa:'ɐˈdʲin',kana:'アジーン',ja:'1（いち）',e:'1️⃣'},
+    {ru:'два',ipa:'dva',kana:'ドゥヴァー',ja:'2（に）',e:'2️⃣'},
+    {ru:'три',ipa:'trʲi',kana:'トリー',ja:'3（さん）',e:'3️⃣'},
+    {ru:'четыре',ipa:'t͡ɕɪˈtɨrʲɪ',kana:'チトゥィリェ',ja:'4（よん）',e:'4️⃣'},
+    {ru:'пять',ipa:'pʲætʲ',kana:'ピャーチ',ja:'5（ご）',e:'5️⃣'},
+    {ru:'шесть',ipa:'ʂɛsʲtʲ',kana:'シェースチ',ja:'6（ろく）',e:'6️⃣'},
+    {ru:'семь',ipa:'sʲemʲ',kana:'シェーミ',ja:'7（なな）',e:'7️⃣'},
+    {ru:'восемь',ipa:'ˈvosʲɪmʲ',kana:'ヴォーシミ',ja:'8（はち）',e:'8️⃣'},
+    {ru:'девять',ipa:'ˈdʲevʲɪtʲ',kana:'ジェーヴィチ',ja:'9（きゅう）',e:'9️⃣'},
+    {ru:'десять',ipa:'ˈdʲesʲɪtʲ',kana:'ジェーシチ',ja:'10（じゅう）',e:'🔟'},
   ]},
   {id:'food',title:'たべもの',icon:'🍎',color:'#ff6fa8',words:[
-    {ru:'яблоко',kana:'ヤーブラカ',ja:'りんご',e:'🍎'},
-    {ru:'банан',kana:'バナーン',ja:'バナナ',e:'🍌'},
-    {ru:'хлеб',kana:'フリェープ',ja:'パン',e:'🍞'},
-    {ru:'молоко',kana:'マラコー',ja:'ぎゅうにゅう',e:'🥛'},
-    {ru:'вода',kana:'ヴァダー',ja:'みず',e:'💧'},
-    {ru:'сыр',kana:'スィール',ja:'チーズ',e:'🧀'},
-    {ru:'яйцо',kana:'イイツォー',ja:'たまご',e:'🥚'},
-    {ru:'мороженое',kana:'マロージナエ',ja:'アイスクリーム',e:'🍦'},
-    {ru:'торт',kana:'トールト',ja:'ケーキ',e:'🎂'},
-    {ru:'суп',kana:'スープ',ja:'スープ',e:'🍲'},
-    {ru:'конфета',kana:'カンフェータ',ja:'あめ・おかし',e:'🍬'},
+    {ru:'яблоко',ipa:'ˈjabɫəkə',kana:'ヤーブラカ',ja:'りんご',e:'🍎'},
+    {ru:'банан',ipa:'bɐˈnan',kana:'バナーン',ja:'バナナ',e:'🍌'},
+    {ru:'хлеб',ipa:'xlʲep',kana:'フリェープ',ja:'パン',e:'🍞'},
+    {ru:'молоко',ipa:'məɫɐˈko',kana:'マラコー',ja:'ぎゅうにゅう',e:'🥛'},
+    {ru:'вода',ipa:'vɐˈda',kana:'ヴァダー',ja:'みず',e:'💧'},
+    {ru:'сыр',ipa:'sɨr',kana:'スィール',ja:'チーズ',e:'🧀'},
+    {ru:'яйцо',ipa:'jɪjˈt͡so',kana:'イイツォー',ja:'たまご',e:'🥚'},
+    {ru:'мороженое',ipa:'mɐˈroʐɨnəjə',kana:'マロージナエ',ja:'アイスクリーム',e:'🍦'},
+    {ru:'торт',ipa:'tort',kana:'トールト',ja:'ケーキ',e:'🎂'},
+    {ru:'суп',ipa:'sup',kana:'スープ',ja:'スープ',e:'🍲'},
+    {ru:'конфета',ipa:'kɐnˈfʲetə',kana:'カンフェータ',ja:'あめ・おかし',e:'🍬'},
   ]},
   {id:'family',title:'かぞく',icon:'👨‍👩‍👧',color:'#ffb020',words:[
-    {ru:'мама',kana:'マーマ',ja:'おかあさん',e:'👩'},
-    {ru:'папа',kana:'パーパ',ja:'おとうさん',e:'👨'},
-    {ru:'бабушка',kana:'バーブシカ',ja:'おばあちゃん',e:'👵'},
-    {ru:'дедушка',kana:'ジェードゥシカ',ja:'おじいちゃん',e:'👴'},
-    {ru:'брат',kana:'ブラート',ja:'きょうだい（おとこ）',e:'👦'},
-    {ru:'сестра',kana:'シストラー',ja:'しまい（おんな）',e:'👧'},
-    {ru:'малыш',kana:'マルィシ',ja:'あかちゃん',e:'👶'},
-    {ru:'друг',kana:'ドルーク',ja:'ともだち',e:'🧑‍🤝‍🧑'},
+    {ru:'мама',ipa:'ˈmamə',kana:'マーマ',ja:'おかあさん',e:'👩'},
+    {ru:'папа',ipa:'ˈpapə',kana:'パーパ',ja:'おとうさん',e:'👨'},
+    {ru:'бабушка',ipa:'ˈbabʊʂkə',kana:'バーブシカ',ja:'おばあちゃん',e:'👵'},
+    {ru:'дедушка',ipa:'ˈdʲedʊʂkə',kana:'ジェードゥシカ',ja:'おじいちゃん',e:'👴'},
+    {ru:'брат',ipa:'brat',kana:'ブラート',ja:'きょうだい（おとこ）',e:'👦'},
+    {ru:'сестра',ipa:'sʲɪˈstra',kana:'シストラー',ja:'しまい（おんな）',e:'👧'},
+    {ru:'малыш',ipa:'mɐˈɫɨʂ',kana:'マルィシ',ja:'あかちゃん',e:'👶'},
+    {ru:'друг',ipa:'druk',kana:'ドルーク',ja:'ともだち',e:'🧑‍🤝‍🧑'},
   ]},
   {id:'body',title:'からだ',icon:'🙂',color:'#20b2aa',words:[
-    {ru:'голова',kana:'ガラヴァー',ja:'あたま',e:'🙂'},
-    {ru:'глаз',kana:'グラース',ja:'め',e:'👁️'},
-    {ru:'нос',kana:'ノース',ja:'はな',e:'👃'},
-    {ru:'рот',kana:'ロート',ja:'くち',e:'👄'},
-    {ru:'ухо',kana:'ウーハ',ja:'みみ',e:'👂'},
-    {ru:'рука',kana:'ルカー',ja:'て',e:'✋'},
-    {ru:'нога',kana:'ナガー',ja:'あし',e:'🦵'},
-    {ru:'зуб',kana:'ズープ',ja:'は',e:'🦷'},
+    {ru:'голова',ipa:'ɡəɫɐˈva',kana:'ガラヴァー',ja:'あたま',e:'🙂'},
+    {ru:'глаз',ipa:'ɡɫas',kana:'グラース',ja:'め',e:'👁️'},
+    {ru:'нос',ipa:'nos',kana:'ノース',ja:'はな',e:'👃'},
+    {ru:'рот',ipa:'rot',kana:'ロート',ja:'くち',e:'👄'},
+    {ru:'ухо',ipa:'ˈuxə',kana:'ウーハ',ja:'みみ',e:'👂'},
+    {ru:'рука',ipa:'rʊˈka',kana:'ルカー',ja:'て',e:'✋'},
+    {ru:'нога',ipa:'nɐˈɡa',kana:'ナガー',ja:'あし',e:'🦵'},
+    {ru:'зуб',ipa:'zup',kana:'ズープ',ja:'は',e:'🦷'},
   ]},
 ];
 // もじクイズ用（ことばの はじめに くる もじだけ）
@@ -231,7 +241,7 @@ const LETTER_QUIZ = {id:'letters',title:'もじ',icon:'🔤',color:'#e0633f'};
 
 // ===== 保存 =====
 const KEY = 'ru-kids-v1';
-let save = {stars:{}, seen:{}};
+let save = {stars:{}, seen:{}, ipa:true};
 try { save = Object.assign(save, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch(e) {}
 function persist(){ try { localStorage.setItem(KEY, JSON.stringify(save)); } catch(e) {} }
 const totalStars = () => Object.values(save.stars).reduce((a,b)=>a+b,0);
@@ -306,7 +316,8 @@ const screens = {
         <button style="background:var(--main)" data-go="letters"><span class="ic">🔤</span><span><b>もじを おぼえよう</b><small>ロシアごの もじ 33こ</small></span></button>
         <button style="background:var(--green)" data-go="words"><span class="ic">🃏</span><span><b>ことばカード</b><small>きいて まねして いってみよう</small></span></button>
         <button style="background:var(--blue)" data-go="quizzes"><span class="ic">🎯</span><span><b>クイズ</b><small>ぜんぶ ⭐3つ めざそう！</small></span></button>
-      </div>${warn}`;
+      </div>
+      <button class="toggle" data-toggle-ipa><span>はつおん きごう を だす<small class="ipa" style="color:var(--purple)">[prʲɪˈvʲet]</small></span><span class="sw ${save.ipa ? 'on' : ''}"></span></button>${warn}`;
   },
 
   letters(){
@@ -321,11 +332,11 @@ const screens = {
     $app.innerHTML = bar('もじ', 'letters') + `
       <div class="card pop" id="card">
         <div class="bigletter">${L.u}<span>${L.l}</span></div>
-        <div class="info"><span class="chip">なまえ <b>${esc(L.kana)}</b></span><span class="chip">おと <b>${esc(L.snd)}</b></span></div>
+        <div class="info"><span class="chip">なまえ <b>${esc(L.kana)}</b></span><span class="chip">おと <b>${esc(L.snd)}</b>${L.ipa ? ` <span class="ipa">[${esc(L.ipa)}]</span>` : ''}</span></div>
         ${L.note ? `<div class="note">${esc(L.note)}</div>` : ''}
         <button class="example" data-say="${esc(L.w)}" style="width:100%">
           <span class="e">${L.e}</span>
-          <span><span class="w">${highlight(L.w, L.l)}</span><small>${esc(L.wk)} ・ ${esc(L.ja)}</small></span>
+          <span><span class="w">${highlight(L.w, L.l)}</span><small>${esc(L.wk)} <span class="ipa">[${esc(L.wi)}]</span></small><small>${esc(L.ja)}</small></span>
           <span style="margin-left:auto;font-size:26px">🔊</span>
         </button>
       </div>
@@ -356,6 +367,7 @@ const screens = {
         <div class="emo">${w.e}</div>
         <div class="ru">${esc(w.ru)}</div>
         <div class="kana">${esc(w.kana)}</div>
+        <div class="ipa">[${esc(w.ipa)}]</div>
         <div class="ja">${esc(w.ja)}</div>
       </div>
       <div class="controls">
@@ -505,6 +517,7 @@ function go(name, ...args){
 document.addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b || b.disabled) return;
   const d = b.dataset;
+  if (d.toggleIpa !== undefined) { save.ipa = !save.ipa; persist(); applyIpa(); return go('home'); }
   if (d.say) return say(d.say);
   if (d.go) return go(d.go);
   if (d.letter !== undefined) return go('letter', d.letter);
@@ -514,6 +527,8 @@ document.addEventListener('click', e => {
   if (d.opt !== undefined) return answer(+d.opt);
 });
 
+function applyIpa(){ document.body.classList.toggle('no-ipa', !save.ipa); }
+applyIpa();
 go('home');
 if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>

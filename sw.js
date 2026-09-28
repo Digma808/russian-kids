@@ -1,5 +1,5 @@
 // オフラインでも あそべるように キャッシュする（更新時は VERSION を上げる）
-const VERSION = 'ru-kids-v1';
+const VERSION = 'ru-kids-v2';
 const FILES = ['./', 'index.html', 'manifest.webmanifest', 'icon.svg'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
