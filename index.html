@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ff7a59">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ロシアご">
+<title>ロシアごであそぼ</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<style>
+:root{
+  --bg:#fff7ec; --card:#ffffff; --ink:#3b2f2a; --sub:#8a7a70;
+  --main:#ff7a59; --blue:#4d8cff; --green:#35b36b; --yellow:#ffc53d; --purple:#9b6bff; --pink:#ff6fa8;
+  --shadow:0 4px 0 rgba(0,0,0,.08);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue","Hiragino Maru Gothic ProN","Hiragino Sans","Rounded Mplus 1c",system-ui,sans-serif;
+  -webkit-user-select:none;user-select:none;overscroll-behavior:none}
+#app{max-width:520px;margin:0 auto;min-height:100%;padding:calc(env(safe-area-inset-top) + 8px) 16px calc(env(safe-area-inset-bottom) + 24px)}
+button{font:inherit;color:inherit;border:none;background:none;cursor:pointer;padding:0}
+.bar{display:flex;align-items:center;gap:8px;height:52px;margin-bottom:8px}
+.bar h1{flex:1;font-size:20px;margin:0;text-align:center}
+.back{width:44px;height:44px;border-radius:14px;background:var(--card);box-shadow:var(--shadow);font-size:22px}
+.star-pill{min-width:44px;height:36px;padding:0 12px;border-radius:18px;background:var(--card);box-shadow:var(--shadow);display:flex;align-items:center;gap:4px;font-weight:700}
+.hero{text-align:center;padding:18px 0 10px}
+.hero .logo{font-size:64px;line-height:1}
+.hero h1{font-size:28px;margin:8px 0 2px}
+.hero p{margin:0;color:var(--sub)}
+.menu{display:grid;gap:14px;margin-top:18px}
+.menu button{display:flex;align-items:center;gap:14px;padding:18px;border-radius:22px;color:#fff;box-shadow:0 5px 0 rgba(0,0,0,.15);text-align:left;transition:transform .08s}
+.menu button:active,.tile:active,.opt:active,.big-btn:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.15)}
+.menu .ic{font-size:42px}
+.menu b{display:block;font-size:22px}
+.menu small{opacity:.9;font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.tile{background:var(--card);border-radius:18px;box-shadow:var(--shadow);aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:transform .08s}
+.tile .L{font-size:34px;font-weight:800;line-height:1}
+.tile .k{font-size:12px;color:var(--sub);margin-top:4px}
+.tile.vowel .L{color:var(--main)}
+.tile.sign .L{color:var(--purple)}
+.tile.cons .L{color:var(--blue)}
+.legend{display:flex;gap:14px;justify-content:center;font-size:13px;color:var(--sub);margin:4px 0 12px}
+.legend i{font-style:normal;font-weight:800}
+.cats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.cat{background:var(--card);border-radius:20px;box-shadow:var(--shadow);padding:16px 8px;text-align:center;position:relative}
+.cat .e{font-size:44px}
+.cat b{display:block;font-size:17px;margin-top:4px}
+.cat .st{font-size:14px;letter-spacing:1px;height:18px;margin-top:2px}
+.card{background:var(--card);border-radius:28px;box-shadow:0 6px 0 rgba(0,0,0,.08);padding:24px 16px;text-align:center;margin-top:6px;touch-action:pan-y}
+.card .emo{font-size:110px;line-height:1.1}
+.card .ru{font-size:40px;font-weight:800;margin-top:10px;word-break:break-word;font-family:system-ui,-apple-system,sans-serif}
+.card .kana{font-size:20px;color:var(--main);margin-top:4px;font-weight:700}
+.card .ja{font-size:18px;color:var(--sub);margin-top:6px}
+.bigletter{font-size:120px;font-weight:800;line-height:1;font-family:system-ui,-apple-system,sans-serif}
+.bigletter span{font-size:72px;color:var(--sub);margin-left:10px}
+.info{display:flex;justify-content:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+.chip{background:var(--bg);border-radius:12px;padding:6px 12px;font-size:15px}
+.chip b{color:var(--main)}
+.note{font-size:14px;color:var(--sub);margin-top:10px;line-height:1.6}
+.example{display:flex;align-items:center;gap:12px;background:var(--bg);border-radius:18px;padding:12px;margin-top:16px;text-align:left}
+.example .e{font-size:52px}
+.example .w{font-size:26px;font-weight:800;font-family:system-ui,-apple-system,sans-serif}
+.example .w u{text-decoration:none;color:var(--main)}
+.example small{display:block;color:var(--sub);font-size:14px}
+.controls{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:18px}
+.big-btn{height:64px;min-width:64px;border-radius:20px;background:var(--card);box-shadow:var(--shadow);font-size:28px;display:flex;align-items:center;justify-content:center;transition:transform .08s}
+.big-btn.say{flex:1;background:var(--blue);color:#fff;font-size:22px;font-weight:700;gap:8px;box-shadow:0 5px 0 rgba(0,0,0,.15)}
+.big-btn:disabled{opacity:.35}
+.count{text-align:center;color:var(--sub);margin-top:12px;font-size:15px}
+.progress{height:12px;background:#f0e3d4;border-radius:6px;overflow:hidden;margin:4px 0 14px}
+.progress div{height:100%;background:var(--green);border-radius:6px;transition:width .3s}
+.q{background:var(--card);border-radius:26px;box-shadow:var(--shadow);padding:20px 14px;text-align:center;min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.q .ask{color:var(--sub);font-size:16px;margin-bottom:8px}
+.q .ru{font-size:40px;font-weight:800;font-family:system-ui,-apple-system,sans-serif}
+.q .emo{font-size:80px;line-height:1.1}
+.q .spk{width:96px;height:96px;border-radius:50%;background:var(--blue);color:#fff;font-size:44px;box-shadow:0 5px 0 rgba(0,0,0,.15)}
+.q .mini{margin-top:8px;font-size:15px;color:var(--blue);font-weight:700}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.opt{background:var(--card);border-radius:22px;box-shadow:var(--shadow);min-height:108px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:4px solid transparent;transition:transform .08s}
+.opt .e{font-size:56px;line-height:1.1}
+.opt .t{font-size:40px;font-weight:800;font-family:system-ui,-apple-system,sans-serif}
+.opt.ok{border-color:var(--green);background:#e6f8ee}
+.opt.ng{border-color:#ff5a5a;background:#ffecec;animation:shake .35s}
+.opt.dim{opacity:.4}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.feedback{text-align:center;font-size:22px;font-weight:800;height:34px;margin-top:10px}
+.result{text-align:center;padding-top:20px}
+.result .stars{font-size:64px;letter-spacing:6px;margin:10px 0}
+.result .stars .off{filter:grayscale(1);opacity:.25}
+.result h2{font-size:28px;margin:6px 0}
+.result p{color:var(--sub);font-size:18px}
+.row{display:grid;gap:12px;margin-top:22px}
+.pill-btn{height:60px;border-radius:20px;font-size:20px;font-weight:700;color:#fff;box-shadow:0 5px 0 rgba(0,0,0,.15)}
+.section-title{font-size:15px;color:var(--sub);margin:18px 4px 8px}
+.voice-warn{background:#fff1c9;border-radius:14px;padding:10px 12px;font-size:13px;line-height:1.5;margin-top:14px;color:#6b5400}
+.pop{animation:pop .3s}
+@keyframes pop{0%{transform:scale(.85)}60%{transform:scale(1.05)}100%{transform:scale(1)}}
+.confetti{position:fixed;top:-40px;font-size:28px;pointer-events:none;animation:fall linear forwards;z-index:9}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+// ===== データ =====
+// type: vowel=ぼいん / cons=しいん / sign=きごう。 hi=例の単語のなかで その文字の位置
+const LETTERS = [
+  {u:'А',l:'а',t:'vowel',name:'а',kana:'アー',snd:'ア',w:'арбуз',wk:'アルブース',e:'🍉',ja:'すいか'},
+  {u:'Б',l:'б',t:'cons',name:'бэ',kana:'ベー',snd:'ブ',w:'банан',wk:'バナーン',e:'🍌',ja:'バナナ'},
+  {u:'В',l:'в',t:'cons',name:'вэ',kana:'ヴェー',snd:'ヴ',w:'волк',wk:'ヴォールク',e:'🐺',ja:'おおかみ'},
+  {u:'Г',l:'г',t:'cons',name:'гэ',kana:'ゲー',snd:'グ',w:'гриб',wk:'グリープ',e:'🍄',ja:'きのこ'},
+  {u:'Д',l:'д',t:'cons',name:'дэ',kana:'デー',snd:'ドゥ',w:'дом',wk:'ドーム',e:'🏠',ja:'いえ'},
+  {u:'Е',l:'е',t:'vowel',name:'е',kana:'イェー',snd:'イェ',w:'ель',wk:'イェーリ',e:'🌲',ja:'もみのき'},
+  {u:'Ё',l:'ё',t:'vowel',name:'ё',kana:'ヨー',snd:'ヨ',w:'ёжик',wk:'ヨージク',e:'🦔',ja:'はりねずみ'},
+  {u:'Ж',l:'ж',t:'cons',name:'жэ',kana:'ジェー',snd:'ジュ',w:'жираф',wk:'ジラーフ',e:'🦒',ja:'きりん'},
+  {u:'З',l:'з',t:'cons',name:'зэ',kana:'ゼー',snd:'ズ',w:'зонт',wk:'ゾーント',e:'☂️',ja:'かさ'},
+  {u:'И',l:'и',t:'vowel',name:'и',kana:'イー',snd:'イ',w:'игрушка',wk:'イグルーシカ',e:'🧸',ja:'おもちゃ'},
+  {u:'Й',l:'й',t:'cons',tk:'みじかいイ',name:'и краткое',kana:'イー・クラートカエ',snd:'みじかい イ',w:'йогурт',wk:'ヨーグルト',e:'🥛',ja:'ヨーグルト'},
+  {u:'К',l:'к',t:'cons',name:'ка',kana:'カー',snd:'ク',w:'кот',wk:'コート',e:'🐱',ja:'ねこ'},
+  {u:'Л',l:'л',t:'cons',name:'эль',kana:'エリ',snd:'ル',w:'лиса',wk:'リサー',e:'🦊',ja:'きつね'},
+  {u:'М',l:'м',t:'cons',name:'эм',kana:'エム',snd:'ム',w:'мяч',wk:'ミャーチ',e:'⚽',ja:'ボール'},
+  {u:'Н',l:'н',t:'cons',name:'эн',kana:'エヌ',snd:'ヌ',w:'нос',wk:'ノース',e:'👃',ja:'はな'},
+  {u:'О',l:'о',t:'vowel',name:'о',kana:'オー',snd:'オ',w:'облако',wk:'オーブラカ',e:'☁️',ja:'くも'},
+  {u:'П',l:'п',t:'cons',name:'пэ',kana:'ペー',snd:'プ',w:'пингвин',wk:'ピングヴィーン',e:'🐧',ja:'ペンギン'},
+  {u:'Р',l:'р',t:'cons',name:'эр',kana:'エル',snd:'ル（まきじた）',w:'рыба',wk:'ルィーバ',e:'🐟',ja:'さかな'},
+  {u:'С',l:'с',t:'cons',name:'эс',kana:'エス',snd:'ス',w:'солнце',wk:'ソーンツェ',e:'☀️',ja:'たいよう'},
+  {u:'Т',l:'т',t:'cons',name:'тэ',kana:'テー',snd:'トゥ',w:'тигр',wk:'ティーグル',e:'🐯',ja:'とら'},
+  {u:'У',l:'у',t:'vowel',name:'у',kana:'ウー',snd:'ウ',w:'утка',wk:'ウートカ',e:'🦆',ja:'あひる'},
+  {u:'Ф',l:'ф',t:'cons',name:'эф',kana:'エフ',snd:'フ',w:'флаг',wk:'フラーク',e:'🚩',ja:'はた'},
+  {u:'Х',l:'х',t:'cons',name:'ха',kana:'ハー',snd:'フ（のどのおく）',w:'хлеб',wk:'フリェープ',e:'🍞',ja:'パン'},
+  {u:'Ц',l:'ц',t:'cons',name:'цэ',kana:'ツェー',snd:'ツ',w:'цветок',wk:'ツヴィトーク',e:'🌸',ja:'はな（おはな）'},
+  {u:'Ч',l:'ч',t:'cons',name:'че',kana:'チェー',snd:'チ',w:'часы',wk:'チスィー',e:'⌚',ja:'とけい'},
+  {u:'Ш',l:'ш',t:'cons',name:'ша',kana:'シャー',snd:'シュ',w:'шапка',wk:'シャープカ',e:'🧢',ja:'ぼうし'},
+  {u:'Щ',l:'щ',t:'cons',name:'ща',kana:'シシャー',snd:'シッ（ながい）',w:'щенок',wk:'シシノーク',e:'🐶',ja:'こいぬ'},
+  {u:'Ъ',l:'ъ',t:'sign',tk:'かたいしるし',name:'твёрдый знак',kana:'トヴョールドゥイ・ズナーク',snd:'おとは ない',note:'「かたい しるし」。まえと うしろの おとを きりはなす しるしだよ。ことばの はじめには こないよ。',w:'подъезд',wk:'パドイェーストゥ',e:'🚪',ja:'（たてものの）いりぐち'},
+  {u:'Ы',l:'ы',t:'vowel',name:'ы',kana:'ウィ',snd:'ウィ（イと ウの あいだ）',note:'ことばの はじめには ほとんど こないよ。',w:'сыр',wk:'スィール',e:'🧀',ja:'チーズ'},
+  {u:'Ь',l:'ь',t:'sign',tk:'やわらかいしるし',name:'мягкий знак',kana:'ミャーフキー・ズナーク',snd:'おとは ない',note:'「やわらかい しるし」。まえの おとを やさしく する しるしだよ。ことばの はじめには こないよ。',w:'конь',wk:'コーニ',e:'🐴',ja:'うま'},
+  {u:'Э',l:'э',t:'vowel',name:'э',kana:'エー',snd:'エ',w:'экран',wk:'エクラーン',e:'📺',ja:'がめん'},
+  {u:'Ю',l:'ю',t:'vowel',name:'ю',kana:'ユー',snd:'ユ',w:'юбка',wk:'ユープカ',e:'👗',ja:'スカート'},
+  {u:'Я',l:'я',t:'vowel',name:'я',kana:'ヤー',snd:'ヤ',w:'яблоко',wk:'ヤーブラカ',e:'🍎',ja:'りんご'},
+];
+
+const CATS = [
+  {id:'hello',title:'あいさつ',icon:'👋',color:'#ff7a59',words:[
+    {ru:'Привет!',kana:'プリヴェート',ja:'やあ！こんにちは',e:'👋'},
+    {ru:'Пока!',kana:'パカー',ja:'バイバイ',e:'🙋'},
+    {ru:'Спасибо',kana:'スパシーバ',ja:'ありがとう',e:'🙏'},
+    {ru:'Пожалуйста',kana:'パジャールスタ',ja:'どういたしまして／どうぞ',e:'😊'},
+    {ru:'Да',kana:'ダー',ja:'はい',e:'⭕'},
+    {ru:'Нет',kana:'ニェート',ja:'いいえ',e:'❌'},
+    {ru:'Доброе утро!',kana:'ドーブラエ ウートラ',ja:'おはよう',e:'🌅'},
+    {ru:'Спокойной ночи!',kana:'スパコーイナイ ノーチ',ja:'おやすみ',e:'🌙'},
+  ]},
+  {id:'animals',title:'どうぶつ',icon:'🐻',color:'#35b36b',words:[
+    {ru:'кошка',kana:'コーシカ',ja:'ねこ',e:'🐱'},
+    {ru:'собака',kana:'サバーカ',ja:'いぬ',e:'🐶'},
+    {ru:'медведь',kana:'ミドヴェーチ',ja:'くま',e:'🐻'},
+    {ru:'заяц',kana:'ザーイツ',ja:'うさぎ',e:'🐰'},
+    {ru:'лиса',kana:'リサー',ja:'きつね',e:'🦊'},
+    {ru:'мышь',kana:'ムィシ',ja:'ねずみ',e:'🐭'},
+    {ru:'птица',kana:'プティーツァ',ja:'とり',e:'🐦'},
+    {ru:'рыба',kana:'ルィーバ',ja:'さかな',e:'🐟'},
+    {ru:'слон',kana:'スローン',ja:'ぞう',e:'🐘'},
+    {ru:'лошадь',kana:'ローシャチ',ja:'うま',e:'🐴'},
+    {ru:'корова',kana:'カローヴァ',ja:'うし',e:'🐮'},
+    {ru:'лягушка',kana:'リグーシカ',ja:'かえる',e:'🐸'},
+  ]},
+  {id:'colors',title:'いろ',icon:'🎨',color:'#9b6bff',words:[
+    {ru:'красный',kana:'クラースヌイ',ja:'あか',e:'🔴'},
+    {ru:'синий',kana:'シーニー',ja:'あお',e:'🔵'},
+    {ru:'зелёный',kana:'ジリョーヌイ',ja:'みどり',e:'🟢'},
+    {ru:'жёлтый',kana:'ジョールトゥイ',ja:'きいろ',e:'🟡'},
+    {ru:'оранжевый',kana:'アランジェヴイ',ja:'オレンジ',e:'🟠'},
+    {ru:'фиолетовый',kana:'フィアリェータヴイ',ja:'むらさき',e:'🟣'},
+    {ru:'белый',kana:'ビェールイ',ja:'しろ',e:'⚪️'},
+    {ru:'чёрный',kana:'チョールヌイ',ja:'くろ',e:'⚫️'},
+    {ru:'коричневый',kana:'カリーチニヴイ',ja:'ちゃいろ',e:'🟤'},
+  ]},
+  {id:'numbers',title:'かず',icon:'🔢',color:'#4d8cff',words:[
+    {ru:'один',kana:'アジーン',ja:'1（いち）',e:'1️⃣'},
+    {ru:'два',kana:'ドゥヴァー',ja:'2（に）',e:'2️⃣'},
+    {ru:'три',kana:'トリー',ja:'3（さん）',e:'3️⃣'},
+    {ru:'четыре',kana:'チトゥィリェ',ja:'4（よん）',e:'4️⃣'},
+    {ru:'пять',kana:'ピャーチ',ja:'5（ご）',e:'5️⃣'},
+    {ru:'шесть',kana:'シェースチ',ja:'6（ろく）',e:'6️⃣'},
+    {ru:'семь',kana:'シェーミ',ja:'7（なな）',e:'7️⃣'},
+    {ru:'восемь',kana:'ヴォーシミ',ja:'8（はち）',e:'8️⃣'},
+    {ru:'девять',kana:'ジェーヴィチ',ja:'9（きゅう）',e:'9️⃣'},
+    {ru:'десять',kana:'ジェーシチ',ja:'10（じゅう）',e:'🔟'},
+  ]},
+  {id:'food',title:'たべもの',icon:'🍎',color:'#ff6fa8',words:[
+    {ru:'яблоко',kana:'ヤーブラカ',ja:'りんご',e:'🍎'},
+    {ru:'банан',kana:'バナーン',ja:'バナナ',e:'🍌'},
+    {ru:'хлеб',kana:'フリェープ',ja:'パン',e:'🍞'},
+    {ru:'молоко',kana:'マラコー',ja:'ぎゅうにゅう',e:'🥛'},
+    {ru:'вода',kana:'ヴァダー',ja:'みず',e:'💧'},
+    {ru:'сыр',kana:'スィール',ja:'チーズ',e:'🧀'},
+    {ru:'яйцо',kana:'イイツォー',ja:'たまご',e:'🥚'},
+    {ru:'мороженое',kana:'マロージナエ',ja:'アイスクリーム',e:'🍦'},
+    {ru:'торт',kana:'トールト',ja:'ケーキ',e:'🎂'},
+    {ru:'суп',kana:'スープ',ja:'スープ',e:'🍲'},
+    {ru:'конфета',kana:'カンフェータ',ja:'あめ・おかし',e:'🍬'},
+  ]},
+  {id:'family',title:'かぞく',icon:'👨‍👩‍👧',color:'#ffb020',words:[
+    {ru:'мама',kana:'マーマ',ja:'おかあさん',e:'👩'},
+    {ru:'папа',kana:'パーパ',ja:'おとうさん',e:'👨'},
+    {ru:'бабушка',kana:'バーブシカ',ja:'おばあちゃん',e:'👵'},
+    {ru:'дедушка',kana:'ジェードゥシカ',ja:'おじいちゃん',e:'👴'},
+    {ru:'брат',kana:'ブラート',ja:'きょうだい（おとこ）',e:'👦'},
+    {ru:'сестра',kana:'シストラー',ja:'しまい（おんな）',e:'👧'},
+    {ru:'малыш',kana:'マルィシ',ja:'あかちゃん',e:'👶'},
+    {ru:'друг',kana:'ドルーク',ja:'ともだち',e:'🧑‍🤝‍🧑'},
+  ]},
+  {id:'body',title:'からだ',icon:'🙂',color:'#20b2aa',words:[
+    {ru:'голова',kana:'ガラヴァー',ja:'あたま',e:'🙂'},
+    {ru:'глаз',kana:'グラース',ja:'め',e:'👁️'},
+    {ru:'нос',kana:'ノース',ja:'はな',e:'👃'},
+    {ru:'рот',kana:'ロート',ja:'くち',e:'👄'},
+    {ru:'ухо',kana:'ウーハ',ja:'みみ',e:'👂'},
+    {ru:'рука',kana:'ルカー',ja:'て',e:'✋'},
+    {ru:'нога',kana:'ナガー',ja:'あし',e:'🦵'},
+    {ru:'зуб',kana:'ズープ',ja:'は',e:'🦷'},
+  ]},
+];
+// もじクイズ用（ことばの はじめに くる もじだけ）
+const LETTER_QUIZ = {id:'letters',title:'もじ',icon:'🔤',color:'#e0633f'};
+
+// ===== 保存 =====
+const KEY = 'ru-kids-v1';
+let save = {stars:{}, seen:{}};
+try { save = Object.assign(save, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch(e) {}
+function persist(){ try { localStorage.setItem(KEY, JSON.stringify(save)); } catch(e) {} }
+const totalStars = () => Object.values(save.stars).reduce((a,b)=>a+b,0);
+const maxStars = () => (CATS.length + 1) * 3;
+
+// ===== 音声 =====
+let ruVoice = null;
+function pickVoice(){
+  if (!('speechSynthesis' in window)) return;
+  const vs = speechSynthesis.getVoices();
+  ruVoice = vs.find(v => /^ru/i.test(v.lang) && /milena|google/i.test(v.name)) || vs.find(v => /^ru/i.test(v.lang)) || null;
+}
+if ('speechSynthesis' in window) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+function say(text, rate = 0.75){
+  if (!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text.replace(/[!?]/g,''));
+  u.lang = 'ru-RU'; u.rate = rate;
+  if (ruVoice) u.voice = ruVoice;
+  speechSynthesis.speak(u);
+}
+const hasVoiceSupport = () => 'speechSynthesis' in window;
+
+// 効果音
+let actx = null;
+function beep(ok){
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    const notes = ok ? [660, 880] : [220, 180];
+    notes.forEach((f, i) => {
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = ok ? 'triangle' : 'square'; o.frequency.value = f;
+      const t = actx.currentTime + i * 0.12;
+      g.gain.setValueAtTime(ok ? 0.18 : 0.06, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+      o.connect(g).connect(actx.destination); o.start(t); o.stop(t + 0.2);
+    });
+  } catch(e) {}
+}
+
+// ===== ユーティリティ =====
+const $app = document.getElementById('app');
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const starsText = n => '⭐'.repeat(n) + '☆'.repeat(3 - n);
+function bar(title, backTo){
+  return `<div class="bar"><button class="back" data-go="${backTo}" aria-label="もどる">◀</button><h1>${title}</h1><div class="star-pill">⭐${totalStars()}</div></div>`;
+}
+function highlight(word, letter){
+  const i = word.toLowerCase().indexOf(letter);
+  if (i < 0) return esc(word);
+  return esc(word.slice(0, i)) + '<u>' + esc(word[i]) + '</u>' + esc(word.slice(i + 1));
+}
+function addSwipe(el, onLeft, onRight){
+  let x0 = null;
+  el.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, {passive:true});
+  el.addEventListener('touchend', e => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0; x0 = null;
+    if (dx < -50) onLeft(); else if (dx > 50) onRight();
+  });
+}
+
+// ===== 画面 =====
+const screens = {
+  home(){
+    const warn = !hasVoiceSupport() ? `<div class="voice-warn">このブラウザでは おとが でません。</div>` : '';
+    $app.innerHTML = `
+      <div class="hero"><div class="logo">🪆</div><h1>ロシアごで あそぼ！</h1><p>Привет! プリヴェート！</p></div>
+      <div style="text-align:center"><span class="star-pill" style="display:inline-flex">⭐ ${totalStars()} / ${maxStars()}</span></div>
+      <div class="menu">
+        <button style="background:var(--main)" data-go="letters"><span class="ic">🔤</span><span><b>もじを おぼえよう</b><small>ロシアごの もじ 33こ</small></span></button>
+        <button style="background:var(--green)" data-go="words"><span class="ic">🃏</span><span><b>ことばカード</b><small>きいて まねして いってみよう</small></span></button>
+        <button style="background:var(--blue)" data-go="quizzes"><span class="ic">🎯</span><span><b>クイズ</b><small>ぜんぶ ⭐3つ めざそう！</small></span></button>
+      </div>${warn}`;
+  },
+
+  letters(){
+    $app.innerHTML = bar('もじ', 'home') + `
+      <div class="legend"><span><i style="color:var(--main)">А</i> ぼいん</span><span><i style="color:var(--blue)">Б</i> しいん</span><span><i style="color:var(--purple)">Ъ</i> しるし</span></div>
+      <div class="grid">${LETTERS.map((L, i) => `<button class="tile ${L.t}" data-letter="${i}"><span class="L">${L.u}${L.l}</span><span class="k">${esc(L.tk || L.kana)}</span></button>`).join('')}</div>`;
+  },
+
+  letter(i){
+    i = +i; const L = LETTERS[i];
+    save.seen['L' + i] = 1; persist();
+    $app.innerHTML = bar('もじ', 'letters') + `
+      <div class="card pop" id="card">
+        <div class="bigletter">${L.u}<span>${L.l}</span></div>
+        <div class="info"><span class="chip">なまえ <b>${esc(L.kana)}</b></span><span class="chip">おと <b>${esc(L.snd)}</b></span></div>
+        ${L.note ? `<div class="note">${esc(L.note)}</div>` : ''}
+        <button class="example" data-say="${esc(L.w)}" style="width:100%">
+          <span class="e">${L.e}</span>
+          <span><span class="w">${highlight(L.w, L.l)}</span><small>${esc(L.wk)} ・ ${esc(L.ja)}</small></span>
+          <span style="margin-left:auto;font-size:26px">🔊</span>
+        </button>
+      </div>
+      <div class="controls">
+        <button class="big-btn" data-letter="${i - 1}" ${i === 0 ? 'disabled' : ''} aria-label="まえ">◀</button>
+        <button class="big-btn say" data-say="${esc(L.name)}">🔊 きく</button>
+        <button class="big-btn" data-letter="${i + 1}" ${i === LETTERS.length - 1 ? 'disabled' : ''} aria-label="つぎ">▶</button>
+      </div>
+      <div class="count">${i + 1} / ${LETTERS.length}</div>`;
+    addSwipe(document.getElementById('card'), () => i < LETTERS.length - 1 && go('letter', i + 1), () => i > 0 && go('letter', i - 1));
+    say(L.name);
+  },
+
+  words(){
+    $app.innerHTML = bar('ことばカード', 'home') + `
+      <div class="cats">${CATS.map(c => {
+        const seen = c.words.filter((_, j) => save.seen[c.id + j]).length;
+        return `<button class="cat" data-cards="${c.id}"><div class="e">${c.icon}</div><b style="color:${c.color}">${c.title}</b><div class="st" style="color:var(--sub);font-size:13px">みた ${seen} / ${c.words.length}</div></button>`;
+      }).join('')}</div>`;
+  },
+
+  cards(id, j = 0){
+    j = +j; const c = CATS.find(x => x.id === id), w = c.words[j];
+    save.seen[c.id + j] = 1; persist();
+    const last = c.words.length - 1;
+    $app.innerHTML = bar(`${c.icon} ${c.title}`, 'words') + `
+      <div class="card pop" id="card">
+        <div class="emo">${w.e}</div>
+        <div class="ru">${esc(w.ru)}</div>
+        <div class="kana">${esc(w.kana)}</div>
+        <div class="ja">${esc(w.ja)}</div>
+      </div>
+      <div class="controls">
+        <button class="big-btn" data-card="${id}:${j - 1}" ${j === 0 ? 'disabled' : ''} aria-label="まえ">◀</button>
+        <button class="big-btn say" data-say="${esc(w.ru)}">🔊 きく</button>
+        ${j < last
+          ? `<button class="big-btn" data-card="${id}:${j + 1}" aria-label="つぎ">▶</button>`
+          : `<button class="big-btn" data-quiz="${id}" aria-label="クイズへ" style="background:var(--green);color:#fff">🎯</button>`}
+      </div>
+      <div class="count">${j + 1} / ${c.words.length}${j === last ? '　さいごまで みたね！🎯で クイズへ' : ''}</div>`;
+    addSwipe(document.getElementById('card'), () => j < last && go('cards', id, j + 1), () => j > 0 && go('cards', id, j - 1));
+    say(w.ru);
+  },
+
+  quizzes(){
+    const all = [LETTER_QUIZ, ...CATS];
+    $app.innerHTML = bar('クイズ', 'home') + `
+      <div class="cats">${all.map(c => {
+        const s = save.stars[c.id] || 0;
+        return `<button class="cat" data-quiz="${c.id}"><div class="e">${c.icon}</div><b style="color:${c.color}">${c.title}</b><div class="st">${starsText(s)}</div></button>`;
+      }).join('')}</div>`;
+  },
+
+  result(){
+    const {cat, score, total, stars, isBest} = quiz.result;
+    const msg = stars === 3 ? 'Отлично! すごい！' : stars === 2 ? 'Хорошо! よくできました！' : stars === 1 ? 'Молодец! がんばったね！' : 'もういちど やってみよう！';
+    const said = stars === 3 ? 'Отлично' : stars === 2 ? 'Хорошо' : 'Молодец';
+    $app.innerHTML = bar('けっか', 'quizzes') + `
+      <div class="result pop">
+        <div style="font-size:64px">${cat.icon}</div>
+        <div class="stars">${[0,1,2].map(k => `<span class="${k < stars ? '' : 'off'}">⭐</span>`).join('')}</div>
+        <h2>${score} / ${total} せいかい</h2>
+        <p>${msg}${isBest ? '<br>🎉 あたらしい きろく！' : ''}</p>
+        <div class="row">
+          <button class="pill-btn" style="background:var(--green)" data-quiz="${cat.id}">もういちど</button>
+          ${cat.id !== 'letters' ? `<button class="pill-btn" style="background:var(--blue)" data-cards="${cat.id}">カードで ふくしゅう</button>` : `<button class="pill-btn" style="background:var(--blue)" data-go="letters">もじを みる</button>`}
+          <button class="pill-btn" style="background:var(--main)" data-go="quizzes">ほかの クイズ</button>
+        </div>
+      </div>`;
+    if (stars > 0) say(said, 0.9);
+    if (stars === 3) confetti();
+  },
+};
+
+// ===== クイズ =====
+const QN = 10;
+let quiz = null;
+function startQuiz(id){
+  let items, cat;
+  if (id === 'letters') {
+    cat = LETTER_QUIZ;
+    // はじめの もじが その文字である ことばだけ
+    const pool = LETTERS.filter(L => L.w[0] === L.l);
+    items = shuffle(pool).slice(0, QN).map(L => {
+      const wrong = shuffle(LETTERS.filter(x => x !== L && x.t !== 'sign')).slice(0, 3);
+      return {type:'first', L, opts: shuffle([L, ...wrong])};
+    });
+  } else {
+    cat = CATS.find(c => c.id === id);
+    let seq = shuffle(cat.words);
+    while (seq.length < QN) seq = seq.concat(shuffle(cat.words));
+    items = seq.slice(0, QN).map((w, k) => {
+      const wrong = shuffle(cat.words.filter(x => x !== w)).slice(0, 3);
+      return {type: k % 2 ? 'read' : 'listen', w, opts: shuffle([w, ...wrong])};
+    });
+  }
+  quiz = {cat, items, i: 0, score: 0, locked: false, missed: false};
+  renderQuestion();
+}
+function renderQuestion(){
+  const {cat, items, i} = quiz, it = items[i];
+  quiz.locked = false; quiz.missed = false;
+  let q, opts;
+  if (it.type === 'first') {
+    q = `<div class="ask">どの もじで はじまる？</div><div class="emo">${it.L.e}</div><div style="font-size:18px;color:var(--sub)">${esc(it.L.ja)}</div><button class="mini" data-say="${esc(it.L.w)}">🔊 ${esc(it.L.wk)}</button>`;
+    opts = it.opts.map((o, k) => `<button class="opt" data-opt="${k}"><span class="t">${o.u}${o.l}</span></button>`).join('');
+  } else if (it.type === 'listen') {
+    q = `<div class="ask">きいて えらぼう！</div><button class="spk" data-say="${esc(it.w.ru)}">🔊</button><div class="mini">もういちど きくなら タップ</div>`;
+    opts = it.opts.map((o, k) => `<button class="opt" data-opt="${k}"><span class="e">${o.e}</span></button>`).join('');
+  } else {
+    q = `<div class="ask">これは どれ？</div><div class="ru">${esc(it.w.ru)}</div><button class="mini" data-say="${esc(it.w.ru)}">🔊 きいてみる</button>`;
+    opts = it.opts.map((o, k) => `<button class="opt" data-opt="${k}"><span class="e">${o.e}</span></button>`).join('');
+  }
+  $app.innerHTML = bar(`${cat.icon} ${cat.title}クイズ`, 'quizzes') + `
+    <div class="progress"><div style="width:${i / items.length * 100}%"></div></div>
+    <div class="q pop">${q}</div>
+    <div class="opts">${opts}</div>
+    <div class="feedback" id="fb"></div>
+    <div class="count">${i + 1} / ${items.length}　⭕ ${quiz.score}</div>`;
+  if (it.type === 'listen') setTimeout(() => say(it.w.ru), 250);
+}
+function answer(k){
+  if (quiz.locked) return;
+  const it = quiz.items[quiz.i], chosen = it.opts[k];
+  const correct = it.type === 'first' ? it.L : it.w;
+  const btns = [...document.querySelectorAll('.opt')];
+  const fb = document.getElementById('fb');
+  if (chosen === correct) {
+    quiz.locked = true;
+    if (!quiz.missed) quiz.score++;
+    btns[k].classList.add('ok');
+    btns.forEach((b, x) => x !== k && b.classList.add('dim'));
+    beep(true);
+    fb.innerHTML = `<span style="color:var(--green)">${quiz.missed ? 'そう！' : 'せいかい！🎉'}</span>`;
+    const w = it.type === 'first' ? it.L.w : it.w.ru;
+    setTimeout(() => say(w), 150);
+    setTimeout(next, 1400);
+  } else {
+    // まちがえても もういちど えらべる（てんすうは なし）
+    quiz.missed = true;
+    btns[k].classList.add('ng'); btns[k].disabled = true;
+    beep(false);
+    fb.innerHTML = `<span style="color:#ff5a5a">おしい！もういちど</span>`;
+  }
+}
+function next(){
+  quiz.i++;
+  if (quiz.i < quiz.items.length) return renderQuestion();
+  const total = quiz.items.length, score = quiz.score;
+  const stars = score === total ? 3 : score >= total * 0.7 ? 2 : score >= total * 0.4 ? 1 : 0;
+  const prev = save.stars[quiz.cat.id] || 0;
+  if (stars > prev) { save.stars[quiz.cat.id] = stars; persist(); }
+  quiz.result = {cat: quiz.cat, score, total, stars, isBest: stars > prev};
+  go('result');
+}
+
+function confetti(){
+  const set = ['⭐','🎉','🪆','✨','🎈'];
+  for (let k = 0; k < 24; k++) {
+    const s = document.createElement('div');
+    s.className = 'confetti';
+    s.textContent = set[k % set.length];
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.animationDuration = 1.8 + Math.random() * 1.6 + 's';
+    s.style.animationDelay = Math.random() * 0.6 + 's';
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 4200);
+  }
+}
+
+// ===== ルーティング =====
+function go(name, ...args){
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+  screens[name](...args);
+  window.scrollTo(0, 0);
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b || b.disabled) return;
+  const d = b.dataset;
+  if (d.say) return say(d.say);
+  if (d.go) return go(d.go);
+  if (d.letter !== undefined) return go('letter', d.letter);
+  if (d.cards) return go('cards', d.cards, 0);
+  if (d.card) { const [id, j] = d.card.split(':'); return go('cards', id, j); }
+  if (d.quiz) { if ('speechSynthesis' in window) speechSynthesis.cancel(); return startQuiz(d.quiz); }
+  if (d.opt !== undefined) return answer(+d.opt);
+});
+
+go('home');
+if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {"name": "russian-kids", "runtimeExecutable": "python3", "runtimeArgs": ["-m", "http.server", "8358"], "port": 8358}
+  ]
+}
