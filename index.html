@@ -98,6 +98,29 @@ button{font:inherit;color:inherit;border:none;background:none;cursor:pointer;pad
 .opt.dim{opacity:.4}
 @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 .feedback{text-align:center;font-size:22px;font-weight:800;height:34px;margin-top:10px}
+.reveal{text-align:center;font-size:17px;line-height:1.6;min-height:28px}
+.reveal b{color:var(--main)}
+.opt .lat{font-size:34px;font-weight:800;font-family:"Helvetica Neue",Arial,sans-serif}
+.opt small{font-size:14px;color:var(--sub)}
+/* ひっかけ もじ */
+.tile{position:relative}
+.tile .warn{position:absolute;top:4px;right:6px;font-size:13px}
+.trapbox{background:#fff1c9;border-radius:14px;padding:10px 12px;margin-top:12px;font-size:15px;line-height:1.6;color:#6b5400;text-align:left}
+.trapbox .big{font-size:20px;font-weight:800}
+.lk{color:#d64545}
+.lk::after{content:"✕";font-size:.65em;margin-left:2px;vertical-align:super}
+.intro{background:var(--card);border-radius:20px;box-shadow:var(--shadow);padding:16px;text-align:center}
+.intro .fake{font-size:34px;font-weight:800;letter-spacing:.04em;font-family:"Helvetica Neue",Arial,sans-serif}
+.intro .ng{color:#d64545}
+.intro .okk{color:var(--green);font-weight:800}
+.safe{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;font-size:14px;color:var(--sub);margin-top:12px}
+.safe b{background:var(--card);box-shadow:var(--shadow);border-radius:10px;padding:1px 8px;font-size:17px;color:var(--green)}
+.trows{display:grid;gap:10px}
+.trow{display:grid;grid-template-columns:76px 1fr;align-items:center;gap:10px;background:var(--card);border-radius:18px;box-shadow:var(--shadow);padding:10px 12px;text-align:left}
+.trow .tL{font-size:34px;font-weight:800;color:var(--purple);text-align:center;font-family:"Helvetica Neue",Arial,sans-serif}
+.trow .map{font-size:20px;font-weight:800}
+.trow .map b{color:var(--green)}
+.trow small{display:block;color:var(--sub);font-size:13px;line-height:1.5;margin-top:2px}
 .result{text-align:center;padding-top:20px}
 .result .stars{font-size:64px;letter-spacing:6px;margin:10px 0}
 .result .stars .off{filter:grayscale(1);opacity:.25}
@@ -239,13 +262,57 @@ const CATS = [
 // もじクイズ用（ことばの はじめに くる もじだけ）
 const LETTER_QUIZ = {id:'letters',title:'もじ',icon:'🔤',color:'#e0633f'};
 
+// えいごに ひっぱられやすい もじ（look=えいごの なにに みえるか、wrong=えいごよみ、right=ほんとうの おと）
+const TRAPS = [
+  {u:'Р',look:'P',wrong:'p',right:'r',tip:'P ではなく R の おと（まきじたの ル）'},
+  {u:'Н',look:'H',wrong:'h',right:'n',tip:'H ではなく N の おと（ナ行）'},
+  {u:'В',look:'B',wrong:'b',right:'v',tip:'B ではなく V の おと（したくちびるを かんで ヴ）'},
+  {u:'С',look:'C',wrong:'k',right:'s',tip:'C に みえるけど いつも S の おと。K には ならない'},
+  {u:'У',look:'Y',wrong:'y',right:'u',tip:'Y ではなく U の おと（くちを まるめて ウ）'},
+  {u:'Х',look:'X',wrong:'ks',right:'kh',tip:'X（クス）ではなく、のどの おくで こする「ハ」'},
+  {u:'Е',look:'E',wrong:'e',right:'ye',tip:'E に にてるけど「エ」ではなく「イェ」。「エ」は Э'},
+  {u:'И',look:'N の うらがえし',wrong:'n',right:'i',tip:'N を うらがえした かたちだけど「イ」'},
+  {u:'Я',look:'R の うらがえし',wrong:'r',right:'ya',tip:'R を うらがえした かたちだけど「ヤ」'},
+  {u:'П',look:'n（こもじ п）',wrong:'n',right:'p',tip:'こもじ п は n に みえるけど P の おと'},
+  {u:'Г',look:'r（こもじ г）',wrong:'r',right:'g',tip:'こもじ г は r に みえるけど G の おと'},
+  {u:'Ь',look:'b（こもじ ь）',wrong:'b',right:'-',tip:'こもじ ь は b に みえるけど おとは ない（まえの おとを やわらかく する しるし）'},
+];
+const TRAP_BY = Object.fromEntries(TRAPS.map(t => [t.u, t]));
+const SOUND_KANA = {v:'ヴ',b:'ブ',n:'ヌ',h:'ハ',r:'ル',p:'プ',s:'ス',k:'ク',u:'ウ',y:'ユ',kh:'ハ（のど）',ks:'クス',e:'エ',ye:'イェ',i:'イ',ya:'ヤ',g:'グ','-':'おとなし'};
+// えいごの もじと ほぼ おなじ よみかたの もじ
+const SAFE_LETTERS = ['А','К','М','О','Т'];
+// えいごに みえる もじ だけで できた ことば（ニセえいご）。4たくに するため ひっかけ もじが 2つ いじょう ある ものだけ
+const TRAP_WORDS = [
+  {ru:'ресторан',kana:'リスタラーン',ipa:'rʲɪstɐˈran',ja:'レストラン',e:'🍽️'},
+  {ru:'нос',kana:'ノース',ipa:'nos',ja:'はな',e:'👃'},
+  {ru:'сон',kana:'ソーン',ipa:'son',ja:'ねむり・ゆめ',e:'😴'},
+  {ru:'суп',kana:'スープ',ipa:'sup',ja:'スープ',e:'🍲'},
+  {ru:'парк',kana:'パールク',ipa:'park',ja:'こうえん',e:'🌳'},
+  {ru:'спорт',kana:'スポールト',ipa:'sport',ja:'スポーツ',e:'⚽'},
+  {ru:'паспорт',kana:'パースパルト',ipa:'ˈpaspərt',ja:'パスポート',e:'🛂'},
+  {ru:'снег',kana:'スニェーク',ipa:'snʲek',ja:'ゆき',e:'❄️'},
+  {ru:'рука',kana:'ルカー',ipa:'rʊˈka',ja:'て',e:'✋'},
+  {ru:'сахар',kana:'サーハル',ipa:'ˈsaxər',ja:'さとう',e:'🍬'},
+  {ru:'сестра',kana:'シストラー',ipa:'sʲɪˈstra',ja:'しまい（あね・いもうと）',e:'👧'},
+  {ru:'карман',kana:'カルマーン',ipa:'kɐrˈman',ja:'ポケット',e:'👖'},
+  {ru:'ворона',kana:'ヴァローナ',ipa:'vɐˈronə',ja:'カラス',e:'🐦'},
+  {ru:'ветер',kana:'ヴェーチル',ipa:'ˈvʲetʲɪr',ja:'かぜ',e:'🌬️'},
+  {ru:'секрет',kana:'シクリェート',ipa:'sʲɪˈkrʲet',ja:'ひみつ',e:'🤫'},
+  {ru:'автор',kana:'アーフタル',ipa:'ˈaftər',ja:'さっか（かいた ひと）',e:'✍️'},
+  {ru:'космонавт',kana:'カスマナーフト',ipa:'kəsmɐˈnaft',ja:'うちゅうひこうし',e:'🧑‍🚀'},
+];
+// ローマじ（めやす）：ほんとうの よみ と、えいごに みえた ままの よみ（г→r、п→n は こもじの みため）
+const ROMA_RIGHT = {а:'a',в:'v',г:'g',е:'e',к:'k',м:'m',н:'n',о:'o',п:'p',р:'r',с:'s',т:'t',у:'u',х:'kh'};
+const ROMA_LOOK  = {а:'a',в:'b',г:'r',е:'e',к:'k',м:'m',н:'h',о:'o',п:'n',р:'p',с:'c',т:'t',у:'y',х:'x'};
+const TRAP_QUIZ = {id:'traps',title:'ひっかけ',icon:'⚠️',color:'#9b6bff'};
+
 // ===== 保存 =====
 const KEY = 'ru-kids-v1';
 let save = {stars:{}, seen:{}, ipa:true};
 try { save = Object.assign(save, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch(e) {}
 function persist(){ try { localStorage.setItem(KEY, JSON.stringify(save)); } catch(e) {} }
 const totalStars = () => Object.values(save.stars).reduce((a,b)=>a+b,0);
-const maxStars = () => (CATS.length + 1) * 3;
+const maxStars = () => (CATS.length + 2) * 3;
 
 // ===== 音声 =====
 let ruVoice = null;
@@ -314,6 +381,7 @@ const screens = {
       <div style="text-align:center"><span class="star-pill" style="display:inline-flex">⭐ ${totalStars()} / ${maxStars()}</span></div>
       <div class="menu">
         <button style="background:var(--main)" data-go="letters"><span class="ic">🔤</span><span><b>もじを おぼえよう</b><small>ロシアごの もじ 33こ</small></span></button>
+        <button style="background:var(--purple)" data-go="traps"><span class="ic">⚠️</span><span><b>えいごに だまされない！</b><small>РЕСТОРАН、ちゃんと よめる？</small></span></button>
         <button style="background:var(--green)" data-go="words"><span class="ic">🃏</span><span><b>ことばカード</b><small>きいて まねして いってみよう</small></span></button>
         <button style="background:var(--blue)" data-go="quizzes"><span class="ic">🎯</span><span><b>クイズ</b><small>ぜんぶ ⭐3つ めざそう！</small></span></button>
       </div>
@@ -322,17 +390,18 @@ const screens = {
 
   letters(){
     $app.innerHTML = bar('もじ', 'home') + `
-      <div class="legend"><span><i style="color:var(--main)">А</i> ぼいん</span><span><i style="color:var(--blue)">Б</i> しいん</span><span><i style="color:var(--purple)">Ъ</i> しるし</span></div>
-      <div class="grid">${LETTERS.map((L, i) => `<button class="tile ${L.t}" data-letter="${i}"><span class="L">${L.u}${L.l}</span><span class="k">${esc(L.tk || L.kana)}</span></button>`).join('')}</div>`;
+      <div class="legend"><span><i style="color:var(--main)">А</i> ぼいん</span><span><i style="color:var(--blue)">Б</i> しいん</span><span><i style="color:var(--purple)">Ъ</i> しるし</span><span>⚠️ えいごに にてる</span></div>
+      <div class="grid">${LETTERS.map((L, i) => `<button class="tile ${L.t}" data-letter="${i}">${TRAP_BY[L.u] ? '<span class="warn">⚠️</span>' : ''}<span class="L">${L.u}${L.l}</span><span class="k">${esc(L.tk || L.kana)}</span></button>`).join('')}</div>`;
   },
 
-  letter(i){
-    i = +i; const L = LETTERS[i];
+  letter(i, back = 'letters'){
+    i = +i; const L = LETTERS[i], T = TRAP_BY[L.u];
     save.seen['L' + i] = 1; persist();
-    $app.innerHTML = bar('もじ', 'letters') + `
+    $app.innerHTML = bar('もじ', back) + `
       <div class="card pop" id="card">
         <div class="bigletter">${L.u}<span>${L.l}</span></div>
         <div class="info"><span class="chip">なまえ <b>${esc(L.kana)}</b></span><span class="chip">おと <b>${esc(L.snd)}</b>${L.ipa ? ` <span class="ipa">[${esc(L.ipa)}]</span>` : ''}</span></div>
+        ${T ? `<div class="trapbox"><span class="big">⚠️ <span class="lk">${esc(T.look)}</span> → ${esc(T.right === '-' ? 'おとなし' : T.right.toUpperCase())}</span><br>${esc(T.tip)}</div>` : ''}
         ${L.note ? `<div class="note">${esc(L.note)}</div>` : ''}
         <button class="example" data-say="${esc(L.w)}" style="width:100%">
           <span class="e">${L.e}</span>
@@ -341,13 +410,32 @@ const screens = {
         </button>
       </div>
       <div class="controls">
-        <button class="big-btn" data-letter="${i - 1}" ${i === 0 ? 'disabled' : ''} aria-label="まえ">◀</button>
+        <button class="big-btn" data-letter="${i - 1}" data-back="${back}" ${i === 0 ? 'disabled' : ''} aria-label="まえ">◀</button>
         <button class="big-btn say" data-say="${esc(L.name)}">🔊 きく</button>
-        <button class="big-btn" data-letter="${i + 1}" ${i === LETTERS.length - 1 ? 'disabled' : ''} aria-label="つぎ">▶</button>
+        <button class="big-btn" data-letter="${i + 1}" data-back="${back}" ${i === LETTERS.length - 1 ? 'disabled' : ''} aria-label="つぎ">▶</button>
       </div>
       <div class="count">${i + 1} / ${LETTERS.length}</div>`;
-    addSwipe(document.getElementById('card'), () => i < LETTERS.length - 1 && go('letter', i + 1), () => i > 0 && go('letter', i - 1));
+    addSwipe(document.getElementById('card'), () => i < LETTERS.length - 1 && go('letter', i + 1, back), () => i > 0 && go('letter', i - 1, back));
     say(L.name);
+  },
+
+  traps(){
+    const idx = u => LETTERS.findIndex(L => L.u === u);
+    $app.innerHTML = bar('ひっかけ もじ', 'home') + `
+      <div class="intro">
+        <div class="fake">РЕСТОРАН</div>
+        <div style="margin-top:6px">えいごよみ <span class="ng">✕ ペクトパン？</span></div>
+        <div>ほんとうは <span class="okk">⭕ リスタラーン（レストラン）</span></div>
+        <button class="mini" data-say="ресторан" style="margin-top:6px;color:var(--blue);font-weight:700">🔊 きいてみる</button>
+      </div>
+      <div class="safe">✅ えいごと ほぼ おなじ：${SAFE_LETTERS.map(u => `<b>${u}</b>`).join('')}</div>
+      <div class="section-title">⚠️ えいごに ひっぱられやすい もじ（タップで くわしく）</div>
+      <div class="trows">${TRAPS.map(T => {
+        const L = LETTERS[idx(T.u)];
+        const right = T.right === '-' ? 'おとなし' : `${T.right.toUpperCase()}（${SOUND_KANA[T.right]}）`;
+        return `<button class="trow" data-letter="${idx(T.u)}" data-back="traps"><span class="tL">${L.u}${L.l}</span><span><span class="map"><span class="lk">${esc(T.look)}</span> → <b>${esc(right)}</b></span><small>${esc(T.tip)}</small></span></button>`;
+      }).join('')}</div>
+      <div class="row"><button class="pill-btn" style="background:var(--purple)" data-quiz="traps">⚠️ ひっかけクイズに ちょうせん</button></div>`;
   },
 
   words(){
@@ -383,7 +471,7 @@ const screens = {
   },
 
   quizzes(){
-    const all = [LETTER_QUIZ, ...CATS];
+    const all = [TRAP_QUIZ, LETTER_QUIZ, ...CATS];
     $app.innerHTML = bar('クイズ', 'home') + `
       <div class="cats">${all.map(c => {
         const s = save.stars[c.id] || 0;
@@ -403,7 +491,9 @@ const screens = {
         <p>${msg}${isBest ? '<br>🎉 あたらしい きろく！' : ''}</p>
         <div class="row">
           <button class="pill-btn" style="background:var(--green)" data-quiz="${cat.id}">もういちど</button>
-          ${cat.id !== 'letters' ? `<button class="pill-btn" style="background:var(--blue)" data-cards="${cat.id}">カードで ふくしゅう</button>` : `<button class="pill-btn" style="background:var(--blue)" data-go="letters">もじを みる</button>`}
+          ${cat.id === 'letters' ? `<button class="pill-btn" style="background:var(--blue)" data-go="letters">もじを みる</button>`
+            : cat.id === 'traps' ? `<button class="pill-btn" style="background:var(--blue)" data-go="traps">ひっかけ もじを みる</button>`
+            : `<button class="pill-btn" style="background:var(--blue)" data-cards="${cat.id}">カードで ふくしゅう</button>`}
           <button class="pill-btn" style="background:var(--main)" data-go="quizzes">ほかの クイズ</button>
         </div>
       </div>`;
@@ -415,15 +505,43 @@ const screens = {
 // ===== クイズ =====
 const QN = 10;
 let quiz = null;
+// ひっかけ もじ 1もじ：ほんとうの おと・えいごよみ・ほかの おと2つ（カナが かぶらない ように）
+function trapLetterItem(T){
+  const L = LETTERS.find(x => x.u === T.u);
+  const picked = [T.right, T.wrong], heads = new Set(picked.map(x => SOUND_KANA[x][0]));
+  for (const x of shuffle(TRAPS.map(t => t.right))) {
+    if (picked.length >= 4) break;
+    if (x === '-' || picked.includes(x) || heads.has(SOUND_KANA[x][0])) continue;
+    picked.push(x); heads.add(SOUND_KANA[x][0]);
+  }
+  return {type:'trapL', T, L, ans: T.right, opts: shuffle(picked), sayText: L.name,
+    reveal: `${L.u}${L.l} → <b>${T.right === '-' ? 'おとなし' : T.right.toUpperCase()}</b>　${esc(T.tip)}`};
+}
+// ニセえいご ことば：ひっかけ もじの ところを ほんとう／えいごよみで まぜた ローマじ
+function trapWordItem(w){
+  const cs = [...w.ru], pos = cs.map((c, i) => ROMA_RIGHT[c] !== ROMA_LOOK[c] ? i : -1).filter(i => i >= 0);
+  const make = set => cs.map((c, i) => (set.has(i) ? ROMA_LOOK : ROMA_RIGHT)[c]).join('');
+  const right = make(new Set()), out = new Set([right, make(new Set(pos))]);
+  for (let t = 0; out.size < 4 && t < 40; t++) out.add(make(new Set(pos.filter(() => Math.random() < .5))));
+  return {type:'trapW', w, ans: right, opts: shuffle([...out]), sayText: w.ru,
+    reveal: `${w.e} <b>${esc(w.kana)}</b> <span class="ipa">[${esc(w.ipa)}]</span> ＝ ${esc(w.ja)}`};
+}
 function startQuiz(id){
+  if (quiz) clearTimeout(quiz.timer);
   let items, cat;
-  if (id === 'letters') {
+  if (id === 'traps') {
+    cat = TRAP_QUIZ;
+    items = shuffle([
+      ...shuffle(TRAPS).slice(0, 4).map(trapLetterItem),
+      ...shuffle(TRAP_WORDS).slice(0, QN - 4).map(trapWordItem),
+    ]);
+  } else if (id === 'letters') {
     cat = LETTER_QUIZ;
     // はじめの もじが その文字である ことばだけ
     const pool = LETTERS.filter(L => L.w[0] === L.l);
     items = shuffle(pool).slice(0, QN).map(L => {
       const wrong = shuffle(LETTERS.filter(x => x !== L && x.t !== 'sign')).slice(0, 3);
-      return {type:'first', L, opts: shuffle([L, ...wrong])};
+      return {type:'first', L, ans: L, opts: shuffle([L, ...wrong]), sayText: L.w};
     });
   } else {
     cat = CATS.find(c => c.id === id);
@@ -431,7 +549,7 @@ function startQuiz(id){
     while (seq.length < QN) seq = seq.concat(shuffle(cat.words));
     items = seq.slice(0, QN).map((w, k) => {
       const wrong = shuffle(cat.words.filter(x => x !== w)).slice(0, 3);
-      return {type: k % 2 ? 'read' : 'listen', w, opts: shuffle([w, ...wrong])};
+      return {type: k % 2 ? 'read' : 'listen', w, ans: w, opts: shuffle([w, ...wrong]), sayText: w.ru};
     });
   }
   quiz = {cat, items, i: 0, score: 0, locked: false, missed: false};
@@ -441,7 +559,13 @@ function renderQuestion(){
   const {cat, items, i} = quiz, it = items[i];
   quiz.locked = false; quiz.missed = false;
   let q, opts;
-  if (it.type === 'first') {
+  if (it.type === 'trapL') {
+    q = `<div class="ask">この もじの おとは？</div><div class="ru" style="font-size:72px;line-height:1.1">${it.L.u}<span style="color:var(--sub);font-size:52px;margin-left:8px">${it.L.l}</span></div>`;
+    opts = it.opts.map((o, k) => `<button class="opt" data-opt="${k}"><span class="lat">${o === '-' ? '—' : o}</span><small>${SOUND_KANA[o]}</small></button>`).join('');
+  } else if (it.type === 'trapW') {
+    q = `<div class="ask">ロシアごとして よむと？</div><div class="ru" style="letter-spacing:.04em">${esc(it.w.ru.toUpperCase())}</div><div style="font-size:22px;color:var(--sub);font-family:system-ui,-apple-system,sans-serif">${esc(it.w.ru)}</div>`;
+    opts = it.opts.map((o, k) => `<button class="opt" data-opt="${k}" style="min-height:76px"><span class="lat" style="font-size:24px">${esc(o)}</span></button>`).join('');
+  } else if (it.type === 'first') {
     q = `<div class="ask">どの もじで はじまる？</div><div class="emo">${it.L.e}</div><div style="font-size:18px;color:var(--sub)">${esc(it.L.ja)}</div><button class="mini" data-say="${esc(it.L.w)}">🔊 ${esc(it.L.wk)}</button>`;
     opts = it.opts.map((o, k) => `<button class="opt" data-opt="${k}"><span class="t">${o.u}${o.l}</span></button>`).join('');
   } else if (it.type === 'listen') {
@@ -456,25 +580,25 @@ function renderQuestion(){
     <div class="q pop">${q}</div>
     <div class="opts">${opts}</div>
     <div class="feedback" id="fb"></div>
+    <div class="reveal" id="rv"></div>
     <div class="count">${i + 1} / ${items.length}　⭕ ${quiz.score}</div>`;
   if (it.type === 'listen') setTimeout(() => say(it.w.ru), 250);
 }
 function answer(k){
   if (quiz.locked) return;
-  const it = quiz.items[quiz.i], chosen = it.opts[k];
-  const correct = it.type === 'first' ? it.L : it.w;
+  const it = quiz.items[quiz.i];
   const btns = [...document.querySelectorAll('.opt')];
   const fb = document.getElementById('fb');
-  if (chosen === correct) {
+  if (it.opts[k] === it.ans) {
     quiz.locked = true;
     if (!quiz.missed) quiz.score++;
     btns[k].classList.add('ok');
     btns.forEach((b, x) => x !== k && b.classList.add('dim'));
     beep(true);
     fb.innerHTML = `<span style="color:var(--green)">${quiz.missed ? 'そう！' : 'せいかい！🎉'}</span>`;
-    const w = it.type === 'first' ? it.L.w : it.w.ru;
-    setTimeout(() => say(w), 150);
-    setTimeout(next, 1400);
+    if (it.reveal) document.getElementById('rv').innerHTML = it.reveal;
+    setTimeout(() => say(it.sayText), 150);
+    quiz.timer = setTimeout(next, it.reveal ? 2600 : 1400);
   } else {
     // まちがえても もういちど えらべる（てんすうは なし）
     quiz.missed = true;
@@ -511,6 +635,8 @@ function confetti(){
 // ===== ルーティング =====
 function go(name, ...args){
   if ('speechSynthesis' in window) speechSynthesis.cancel();
+  // せいかい後の「つぎへ」タイマーが ほかの がめんで うごかない ように
+  if (quiz) clearTimeout(quiz.timer);
   screens[name](...args);
   window.scrollTo(0, 0);
 }
@@ -520,7 +646,7 @@ document.addEventListener('click', e => {
   if (d.toggleIpa !== undefined) { save.ipa = !save.ipa; persist(); applyIpa(); return go('home'); }
   if (d.say) return say(d.say);
   if (d.go) return go(d.go);
-  if (d.letter !== undefined) return go('letter', d.letter);
+  if (d.letter !== undefined) return go('letter', d.letter, d.back || 'letters');
   if (d.cards) return go('cards', d.cards, 0);
   if (d.card) { const [id, j] = d.card.split(':'); return go('cards', id, j); }
   if (d.quiz) { if ('speechSynthesis' in window) speechSynthesis.cancel(); return startQuiz(d.quiz); }
